@@ -27,6 +27,9 @@ test("server-renders the High-Lvl Conversations experience", async () => {
   assert.match(html, /Ask the Archive/);
   assert.match(html, /Request the media kit/);
   assert.match(html, /Enter the ecosystem/);
+  assert.match(html, /open\.spotify\.com\/show\/2Xuv0FRgrJsN4Dl2QE0a9Y/);
+  assert.match(html, /podcasts\.apple\.com\/us\/podcast\/19-keys-presents-high-level-conversations\/id1331519433/);
+  assert.doesNotMatch(html, />THE<br\s*\/>LEDGER</i);
   assert.match(html, /og:image/);
   assert.match(html, /\/og\.png/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/i);

@@ -89,8 +89,8 @@ const categories = ["All", "AI + Tech", "Ownership", "Culture", "Supermind", "Le
 
 const listenLinks = {
   youtube: "https://www.youtube.com/@19Keys/videos",
-  spotify: "https://open.spotify.com/search/High%20Lvl%20Conversations",
-  apple: "https://podcasts.apple.com/us/search?term=High%20Lvl%20Conversations",
+  spotify: "https://open.spotify.com/show/2Xuv0FRgrJsN4Dl2QE0a9Y",
+  apple: "https://podcasts.apple.com/us/podcast/19-keys-presents-high-level-conversations/id1331519433",
 };
 
 function ArrowLink({ href, children, className = "" }: { href: string; children: React.ReactNode; className?: string }) {
@@ -279,7 +279,7 @@ export function HlcExperience() {
         <div className="hero-sun" aria-hidden="true" />
         <div className="hero-copy">
           <span className="hero-season">Season 5 / The future is in session</span>
-          <h1><span>HIGH-LVL</span><strong>CONVERSATIONS</strong></h1>
+          <h1><span className="hero-main-line"><b>HIGH-</b><b className="hero-lvl">LVL</b></span><strong>CONVERSATIONS</strong></h1>
           <p>Ideas for the people building, funding, and owning what comes next.</p>
           <div className="hero-actions">
             <button className="primary-action" onClick={() => setTrailer(episodes[0])}>
@@ -288,19 +288,25 @@ export function HlcExperience() {
             <PlatformLinks compact />
           </div>
         </div>
-        <img className="hero-portrait" src="/assets/portrait-suit.webp" alt="19Keys, host of High-Lvl Conversations" />
+        <img className="hero-portrait" src="/assets/hero-keys-wide-v2.webp" alt="19Keys, host of High-Lvl Conversations" />
         <div className="hero-index" aria-hidden="true"><span>19</span><b>05</b></div>
         <a className="scroll-cue" href="#watch"><ArrowDown size={17} /><span>Enter the conversation</span></a>
       </section>
 
       <div className="signal-ticker" aria-label="Show topics">
-        <div>
-          <span>AI + FUTURE TECH</span><i />
-          <span>WEALTH + OWNERSHIP</span><i />
-          <span>CULTURE + MEDIA</span><i />
-          <span>MIND + SPIRIT</span><i />
-          <span>AI + FUTURE TECH</span><i />
-          <span>WEALTH + OWNERSHIP</span><i />
+        <div className="signal-track">
+          <div className="signal-sequence">
+            <span>AI + FUTURE TECH</span><i />
+            <span>WEALTH + OWNERSHIP</span><i />
+            <span>CULTURE + MEDIA</span><i />
+            <span>MIND + SPIRIT</span><i />
+          </div>
+          <div className="signal-sequence" aria-hidden="true">
+            <span>AI + FUTURE TECH</span><i />
+            <span>WEALTH + OWNERSHIP</span><i />
+            <span>CULTURE + MEDIA</span><i />
+            <span>MIND + SPIRIT</span><i />
+          </div>
         </div>
       </div>
 
@@ -389,7 +395,6 @@ export function HlcExperience() {
         <div className="guest-collage reveal">
           <img className="guest-a" src="/assets/guests-culture.webp" alt="19Keys with guests from High-Lvl Conversations" />
           <img className="guest-b" src="/assets/guests-builders.webp" alt="High-Lvl Conversations guest portraits" />
-          <span>THE<br />LEDGER</span>
         </div>
       </section>
 
