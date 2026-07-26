@@ -276,7 +276,6 @@ export function HlcExperience() {
       </div>
 
       <section className="hero" id="top">
-        <div className="hero-sun" aria-hidden="true" />
         <div className="hero-copy">
           <span className="hero-season">Season 5 / The future is in session</span>
           <h1><span className="hero-main-line"><b>HIGH-</b><b className="hero-lvl">LVL</b></span><strong>CONVERSATIONS</strong></h1>
@@ -288,7 +287,7 @@ export function HlcExperience() {
             <PlatformLinks compact />
           </div>
         </div>
-        <img className="hero-portrait" src="/assets/hero-keys-wide-v2.webp" alt="19Keys, host of High-Lvl Conversations" />
+        <img className="hero-portrait" src="/assets/hero-keys-circle-v3.webp" alt="19Keys, host of High-Lvl Conversations" />
         <div className="hero-index" aria-hidden="true"><span>19</span><b>05</b></div>
         <a className="scroll-cue" href="#watch"><ArrowDown size={17} /><span>Enter the conversation</span></a>
       </section>

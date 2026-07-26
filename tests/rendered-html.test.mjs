@@ -49,6 +49,7 @@ test("removes starter-only code and keeps production metadata", async () => {
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   await assert.rejects(access(new URL("../app/_sites-preview", import.meta.url)));
   await access(new URL("../public/og.png", import.meta.url));
+  await access(new URL("../public/assets/hero-keys-circle-v3.webp", import.meta.url));
   await access(new URL("../public/assets/season5-hero.webp", import.meta.url));
   await access(new URL("../public/fonts/Antonio-Bold.ttf", import.meta.url));
   assert.ok(templateRoot);
