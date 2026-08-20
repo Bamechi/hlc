@@ -24,6 +24,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 const ASK_KEYS_URL = "https://ask.19keys.com/";
 const ZIION_URL = "https://ziion.io/nations/high-lvl-nation";
 const STRIPE_PREORDER_URL = "https://buy.stripe.com/28E5kEaeJ6lk1Vb73U1Fe0k";
+const HLC_PLAYLIST_URL = "https://www.youtube.com/playlist?list=PLXa8HXFcKT94-5I_FVD23rEzohplSf2-x";
 const GOOGLE_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbxZCNbD0W66scsYNBi78IwbS1Yt7WEc8PHxQUo8CKo-6e2QVpRi6lNSqsPW_G2V0SA/exec";
 
@@ -118,7 +119,7 @@ const fallbackCuriositySections: CuriositySection[] = [
       {
         title: "The Programmable Future",
         guest: "Iddris Sandu",
-        url: "https://www.youtube.com/playlist?list=PLXa8HXFcKT94-5I_FVD23rEzohplSf2-x",
+        url: HLC_PLAYLIST_URL,
         tag: "Code, culture, ownership",
         note: "Use the HLC playlist as the source until the episode sheet is connected.",
       },
@@ -151,7 +152,7 @@ const fallbackCuriositySections: CuriositySection[] = [
       {
         title: "Official HLC Playlist",
         guest: "19Keys",
-        url: "https://www.youtube.com/playlist?list=PLXa8HXFcKT94-5I_FVD23rEzohplSf2-x",
+        url: HLC_PLAYLIST_URL,
         tag: "Archive",
         note: "The complete viewing path for wealth and power episodes.",
       },
@@ -242,6 +243,34 @@ const partnershipOptions = [
   "Sponsor and Product Placement",
   "Live Experiences",
   "Apply to Be a Guest",
+];
+
+const cardGameShots = [
+  {
+    label: "Box",
+    src: "/assets/hlc-card-box-lid.png",
+    alt: "High-Lvl Conversations Keyism Edition card game box lid",
+  },
+  {
+    label: "Interior",
+    src: "/assets/hlc-card-interior.png",
+    alt: "High-Lvl Conversations card game interior tray with three decks",
+  },
+  {
+    label: "Question",
+    src: "/assets/hlc-card-question.png",
+    alt: "High-Lvl Conversations black question card",
+  },
+  {
+    label: "Game Flow",
+    src: "/assets/hlc-card-gameflow.png",
+    alt: "High-Lvl Conversations game flow card",
+  },
+  {
+    label: "Red Deck",
+    src: "/assets/hlc-card-red-back.png",
+    alt: "High-Lvl Conversations red deck back",
+  },
 ];
 
 const listenLinks = {
@@ -382,6 +411,7 @@ export function HlcExperience() {
   const [sponsorSelection, setSponsorSelection] = useState(partnershipOptions[0]);
   const [preorderOpen, setPreorderOpen] = useState(false);
   const [preorderStatus, setPreorderStatus] = useState("");
+  const [activeCardShot, setActiveCardShot] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const activeCuriosityEpisodes = useMemo(
@@ -539,9 +569,9 @@ export function HlcExperience() {
           <h1><span className="hero-main-line"><b>HIGH-</b><b className="hero-lvl">LVL</b></span><strong>CONVERSATIONS</strong></h1>
           <p>Ideas for the people building, funding, and owning what comes next.</p>
           <div className="hero-actions">
-            <button className="primary-action" onClick={() => setTrailer(episodes[0])}>
+            <a className="primary-action" href={HLC_PLAYLIST_URL} target="_blank" rel="noreferrer">
               <CirclePlay size={19} aria-hidden="true" /> Watch season trailer
-            </button>
+            </a>
             <PlatformLinks compact />
           </div>
         </div>
@@ -653,8 +683,26 @@ export function HlcExperience() {
 
       <section className="commerce-band" id="shop">
         <div className="product-stage reveal">
-          <img className="card-package-image" src="/assets/hlc-packaging.png" alt="High-Lvl Conversations card game package mockups" />
-          <img className="card-signal-image" src="/assets/hlc-card-signal.png" alt="High-Lvl Conversations card face examples" />
+          <div className="product-gallery" aria-label="High-Lvl Conversations card game previews">
+            <div className="product-frame">
+              <img src={cardGameShots[activeCardShot].src} alt={cardGameShots[activeCardShot].alt} />
+            </div>
+            <div className="product-thumbs" role="tablist" aria-label="Card game preview choices">
+              {cardGameShots.map((shot, index) => (
+                <button
+                  aria-selected={activeCardShot === index}
+                  className={activeCardShot === index ? "is-active" : ""}
+                  key={shot.src}
+                  onClick={() => setActiveCardShot(index)}
+                  role="tab"
+                  type="button"
+                >
+                  <img src={shot.src} alt="" />
+                  <span>{shot.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="deck-box deck-front"><span>HIGH-LVL</span><img src="/assets/19keys-key.png" alt="" /><b>CONVERSATION CARDS</b><small>THE KEYISM EDITION</small></div>
         </div>
         <div className="commerce-copy reveal">

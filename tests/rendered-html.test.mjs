@@ -27,6 +27,12 @@ test("server-renders the High-Lvl Conversations experience", async () => {
   assert.match(html, /Ask the Archive/);
   assert.match(html, /Follow your curiosity/);
   assert.match(html, /Pre-order for \$88/);
+  assert.match(html, /Watch season trailer/);
+  assert.match(html, /youtube\.com\/playlist\?list=PLXa8HXFcKT94-5I_FVD23rEzohplSf2-x/);
+  assert.match(html, /hlc-card-box-lid\.png/);
+  assert.match(html, /hlc-card-interior\.png/);
+  assert.match(html, /hlc-card-question\.png/);
+  assert.doesNotMatch(html, /hlc-packaging\.png|hlc-card-signal\.png/);
   assert.match(html, /Sponsor and product placement/i);
   assert.match(html, /Apply to be on the show/i);
   assert.match(html, /ziion\.io\/nations\/high-lvl-nation/);
@@ -56,6 +62,9 @@ test("removes starter-only code and keeps production metadata", async () => {
   await access(new URL("../public/og.png", import.meta.url));
   await access(new URL("../public/assets/hero-keys-circle-v3.webp", import.meta.url));
   await access(new URL("../public/assets/season5-hero.webp", import.meta.url));
+  await access(new URL("../public/assets/hlc-card-box-lid.png", import.meta.url));
+  await access(new URL("../public/assets/hlc-card-interior.png", import.meta.url));
+  await access(new URL("../public/assets/hlc-card-question.png", import.meta.url));
   await access(new URL("../public/fonts/Antonio-Bold.ttf", import.meta.url));
   assert.ok(templateRoot);
 });
