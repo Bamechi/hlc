@@ -20,6 +20,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import hlcMasterIndex from "./data/hlc-master-index.json";
 
 const ASK_KEYS_URL = "https://ask.19keys.com/";
 const NINETEEN_KEYS_URL = "https://19keys.com/";
@@ -42,18 +43,25 @@ type Episode = {
   accent: string;
 };
 
-type CuriosityEpisode = {
+type ArchiveEpisode = {
+  show: string;
+  pillarKey: string;
+  pillar: string;
   title: string;
   guest: string;
+  runtime: string;
+  seconds: number;
+  tags: string[];
+  offer: string;
+  videoId: string;
   url: string;
-  tag: string;
-  note: string;
+  duplicateOf: string | null;
 };
 
-type CuriositySection = {
-  section: string;
-  episodes: CuriosityEpisode[];
-};
+const archiveEpisodes = hlcMasterIndex as ArchiveEpisode[];
+const canonicalArchiveEpisodes = archiveEpisodes.filter((episode) => !episode.duplicateOf);
+const archivePillars = [...new Set(canonicalArchiveEpisodes.map((episode) => episode.pillar))].sort();
+const archiveTags = [...new Set(canonicalArchiveEpisodes.flatMap((episode) => episode.tags))].sort();
 
 const episodes: Episode[] = [
   {
@@ -105,139 +113,6 @@ const episodes: Episode[] = [
     image: "/assets/guests-culture.webp",
     hook: "Beyond status: building the ideas, rituals, and relationships that carry forward.",
     accent: "#d81920",
-  },
-];
-
-const fallbackCuriositySections: CuriositySection[] = [
-  {
-    section: "AI and Technology",
-    episodes: [
-      {
-        title: "Economics Is Warfare: How to Build Wealth, Power and Freedom",
-        guest: "Dr. Boyce Watkins",
-        url: "https://youtu.be/_RBftcP3Gng",
-        tag: "AI, economics, power",
-        note: "Systems thinking, AI investing, ownership and family infrastructure.",
-      },
-      {
-        title: "The Programmable Future",
-        guest: "Iddris Sandu",
-        url: HLC_PLAYLIST_URL,
-        tag: "Code, culture, ownership",
-        note: "Use the HLC playlist as the source until the episode sheet is connected.",
-      },
-      {
-        title: "Managing AI Is Just Like Managing People",
-        guest: "Joey Bada$$",
-        url: "https://youtu.be/2NCA2y_T26I",
-        tag: "Prompting, leadership",
-        note: "A practical frame for directing intelligence and environment.",
-      },
-    ],
-  },
-  {
-    section: "Wealth and Power",
-    episodes: [
-      {
-        title: "Economics Is Warfare: How to Build Wealth, Power and Freedom",
-        guest: "Dr. Boyce Watkins",
-        url: "https://youtu.be/_RBftcP3Gng",
-        tag: "Ownership, leverage",
-        note: "Community economics, investing, voting power and institutions.",
-      },
-      {
-        title: "Black Excellence Is a Scam - Here is the Truth About Power",
-        guest: "19Keys InvestFest Keynote",
-        url: "https://www.iheart.com/podcast/256-19-keys-presents-high-leve-43053795/episode/black-excellence-is-a-scamheres-the-292739700/",
-        tag: "Power, culture",
-        note: "A keynote on cognitive warfare, AI, wealth and unity.",
-      },
-      {
-        title: "Official HLC Playlist",
-        guest: "19Keys",
-        url: HLC_PLAYLIST_URL,
-        tag: "Archive",
-        note: "The complete viewing path for wealth and power episodes.",
-      },
-    ],
-  },
-  {
-    section: "Health and Energy",
-    episodes: [
-      {
-        title: "Secret Knowledge of Self Healing, Original Man Science and Nature's Cures",
-        guest: "Dr. Yahki",
-        url: "https://www.iheart.com/podcast/256-19-keys-presents-high-leve-43053795/episode/secret-knowledge-of-self-healing-original-326899236/",
-        tag: "Healing, nature",
-        note: "Natural rhythm, biological balance and disciplined mind-body systems.",
-      },
-      {
-        title: "Hyperbolic Wellness: Super Healing Procedures and Bio Hacking",
-        guest: "Yahki and 19Keys",
-        url: "https://www.iheart.com/podcast/256-19-keys-presents-high-leve-43053795/episode/hyperbolic-wellness-super-healing-procedures-facilities-288447738/",
-        tag: "Wellness, longevity",
-        note: "Advanced healing, wellness centers and holistic infrastructure.",
-      },
-      {
-        title: "The Gifted Seers and Radical Joy",
-        guest: "Tabitha Brown",
-        url: "https://www.youtube.com/@19KEYS",
-        tag: "Joy, intuition",
-        note: "Faith, purpose, joy and spiritual responsibility.",
-      },
-    ],
-  },
-  {
-    section: "Culture and Legacy",
-    episodes: [
-      {
-        title: "The Great Reprogramming: Renaissance or Revolution",
-        guest: "Jaylen Brown, Vic Mensa and Tech With X",
-        url: "https://www.iheart.com/podcast/256-19-keys-presents-high-leve-43053795/",
-        tag: "Culture, future",
-        note: "AI, cultural consciousness, cognitive warfare and community leadership.",
-      },
-      {
-        title: "Stop Letting Corporations Own Your Influence",
-        guest: "Jaylen Brown",
-        url: "https://open.spotify.com/show/2Xuv0FRgrJsN4Dl2QE0a9Y",
-        tag: "Influence, ownership",
-        note: "Authenticity, endorsement power and building beyond contracts.",
-      },
-      {
-        title: "High Level Conversations Official Channel",
-        guest: "19Keys",
-        url: "https://www.youtube.com/@19KEYS",
-        tag: "Video archive",
-        note: "The main channel for current and classic HLC drops.",
-      },
-    ],
-  },
-  {
-    section: "Spirit and Philosophy",
-    episodes: [
-      {
-        title: "Hidden Truth: Ancient Civilizations, Multiple Dimensions, Aliens and Time",
-        guest: "Billy Carson",
-        url: "https://highlvl.19keys.com/million-dollar-movement-homepage",
-        tag: "Ancient wisdom",
-        note: "Time, civilizations, hidden knowledge and human potential.",
-      },
-      {
-        title: "The Algorithm Owns You",
-        guest: "Blue Pill",
-        url: "https://open.spotify.com/show/2Xuv0FRgrJsN4Dl2QE0a9Y",
-        tag: "Attention, authenticity",
-        note: "A challenge around identity, illusion and the business of truth.",
-      },
-      {
-        title: "The Death of Meaning",
-        guest: "Coffee with Keys",
-        url: "https://www.iheart.com/podcast/256-19-keys-presents-high-leve-43053795/episode/the-death-of-meaning-coffee-328013262/",
-        tag: "Meaning, literacy",
-        note: "Reading, writing, attention and protecting the modern mind.",
-      },
-    ],
   },
 ];
 
@@ -385,8 +260,10 @@ function TrailerModal({ episode, onClose }: { episode: Episode; onClose: () => v
 export function HlcExperience() {
   const [intro, setIntro] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [curiositySections, setCuriositySections] = useState(fallbackCuriositySections);
-  const [activeCuriosity, setActiveCuriosity] = useState(fallbackCuriositySections[0].section);
+  const [curiosityQuery, setCuriosityQuery] = useState("");
+  const [activePillar, setActivePillar] = useState("All");
+  const [activeTag, setActiveTag] = useState("All");
+  const [visibleArchiveCount, setVisibleArchiveCount] = useState(9);
   const [trailer, setTrailer] = useState<Episode | null>(null);
   const [archiveQuery, setArchiveQuery] = useState("");
   const [sponsorOpen, setSponsorOpen] = useState(false);
@@ -397,42 +274,31 @@ export function HlcExperience() {
   const [preorderStatus, setPreorderStatus] = useState("");
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const activeCuriosityEpisodes = useMemo(
-    () => curiositySections.find((item) => item.section === activeCuriosity)?.episodes ?? [],
-    [activeCuriosity, curiositySections],
-  );
+  const filteredArchiveEpisodes = useMemo(() => {
+    const query = curiosityQuery.trim().toLocaleLowerCase();
+
+    return canonicalArchiveEpisodes.filter((episode) => {
+      const matchesPillar = activePillar === "All" || episode.pillar === activePillar;
+      const matchesTag = activeTag === "All" || episode.tags.includes(activeTag);
+      const searchText = [
+        episode.title,
+        episode.guest,
+        episode.pillar,
+        episode.show,
+        episode.offer,
+        ...episode.tags,
+      ].join(" ").toLocaleLowerCase();
+
+      return matchesPillar && matchesTag && (!query || searchText.includes(query));
+    });
+  }, [activePillar, activeTag, curiosityQuery]);
+
+  const visibleArchiveEpisodes = filteredArchiveEpisodes.slice(0, visibleArchiveCount);
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timer = window.setTimeout(() => setIntro(false), reducedMotion ? 50 : 1550);
     return () => window.clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const callbackName = `hlcEpisodes${Date.now()}`;
-    const script = document.createElement("script");
-
-    window[callbackName as keyof Window] = ((payload: { sections?: CuriositySection[] }) => {
-      if (payload?.sections?.length) {
-        setCuriositySections(payload.sections);
-        setActiveCuriosity(payload.sections[0].section);
-      }
-      script.remove();
-      delete window[callbackName as keyof Window];
-    }) as never;
-
-    script.src = `${GOOGLE_SCRIPT_URL}?action=episodes&callback=${callbackName}`;
-    script.async = true;
-    script.onerror = () => {
-      script.remove();
-      delete window[callbackName as keyof Window];
-    };
-    document.body.appendChild(script);
-
-    return () => {
-      script.remove();
-      delete window[callbackName as keyof Window];
-    };
   }, []);
 
   useEffect(() => {
@@ -601,35 +467,89 @@ export function HlcExperience() {
         </article>
       </section>
 
-      <section className="archive-section">
+      <section className="archive-section" id="curiosity">
         <div className="archive-top reveal">
-          <div><span className="kicker">The archive / Sheet ready</span><h2>Follow your curiosity.</h2></div>
-          <div className="topic-filters" role="tablist" aria-label="Episode sections">
-            {curiositySections.map((item) => (
+          <div><span className="kicker">107 conversations / 7 pillars / 58 topics</span><h2>Follow your curiosity.</h2></div>
+          <p>Search a guest, idea, or episode. Then move through the archive by pillar or topic.</p>
+        </div>
+
+        <div className="archive-controls reveal">
+          <label className="curiosity-search" htmlFor="curiosity-search">
+            <span>Search the index</span>
+            <div>
+              <Search size={18} aria-hidden="true" />
+              <input
+                id="curiosity-search"
+                type="search"
+                value={curiosityQuery}
+                onChange={(event) => { setCuriosityQuery(event.target.value); setVisibleArchiveCount(9); }}
+                placeholder="Search guest, title, topic..."
+              />
+            </div>
+          </label>
+          <label className="topic-select" htmlFor="curiosity-topic">
+            <span>Filter by topic</span>
+            <select id="curiosity-topic" value={activeTag} onChange={(event) => { setActiveTag(event.target.value); setVisibleArchiveCount(9); }}>
+              <option value="All">All topics</option>
+              {archiveTags.map((tag) => <option value={tag} key={tag}>{tag}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <div className="pillar-row reveal">
+          <span>Filter by pillar</span>
+          <div className="topic-filters" role="tablist" aria-label="Episode pillars">
+            {["All", ...archivePillars].map((pillar) => (
               <button
-                className={activeCuriosity === item.section ? "is-active" : ""}
-                key={item.section}
-                onClick={() => setActiveCuriosity(item.section)}
+                className={activePillar === pillar ? "is-active" : ""}
+                key={pillar}
+                onClick={() => { setActivePillar(pillar); setVisibleArchiveCount(9); }}
                 role="tab"
                 type="button"
-                aria-selected={activeCuriosity === item.section}
+                aria-selected={activePillar === pillar}
               >
-                {item.section}
+                {pillar === "All" ? "All pillars" : pillar}
               </button>
             ))}
           </div>
         </div>
-        <div className="episode-grid curiosity-grid">
-          {activeCuriosityEpisodes.map((episode, index) => (
-            <a className="episode-card reveal" href={episode.url} target="_blank" rel="noreferrer" key={`${episode.title}-${episode.url}`}>
-              <span className="curiosity-index">0{index + 1}</span>
-              <span className="kicker">{episode.tag}</span>
-              <h3>{episode.title}</h3>
-              <p>{episode.guest}</p>
-              <div className="card-footer"><span>{episode.note}</span><strong>Watch <ArrowRight size={15} /></strong></div>
-            </a>
-          ))}
+
+        <div className="archive-result-bar reveal" aria-live="polite">
+          <span>{filteredArchiveEpisodes.length} {filteredArchiveEpisodes.length === 1 ? "conversation" : "conversations"}</span>
+          <span>{activePillar === "All" ? "All pillars" : activePillar}{activeTag === "All" ? "" : ` / ${activeTag}`}</span>
         </div>
+
+        {visibleArchiveEpisodes.length > 0 ? (
+          <div className="episode-grid curiosity-grid">
+            {visibleArchiveEpisodes.map((episode, index) => (
+              <a className="episode-card reveal" href={episode.url} target="_blank" rel="noreferrer" key={episode.videoId} aria-label={`Watch ${episode.title} on YouTube`}>
+              <div className="curiosity-card-head">
+                <span className="curiosity-index">{String(index + 1).padStart(3, "0")}</span>
+                <span className="curiosity-runtime"><Clock3 size={13} aria-hidden="true" /> {episode.runtime}</span>
+              </div>
+              <span className="kicker">{episode.pillar} / {episode.show}</span>
+              <h3>{episode.title}</h3>
+              <p>{episode.guest.startsWith("Guest not named") ? "Guest details in episode" : `With ${episode.guest}`}</p>
+              <div className="episode-tags" aria-label="Episode topics">
+                {episode.tags.map((tag) => <span key={tag}>{tag}</span>)}
+              </div>
+              <div className="card-footer"><span>{episode.offer}</span><strong>Watch episode <ArrowRight size={15} /></strong></div>
+            </a>
+            ))}
+          </div>
+        ) : (
+          <div className="archive-empty reveal">
+            <h3>No conversations found.</h3>
+            <p>Try another guest, title, pillar, or topic.</p>
+            <button type="button" onClick={() => { setCuriosityQuery(""); setActivePillar("All"); setActiveTag("All"); }}>Clear filters</button>
+          </div>
+        )}
+
+        {visibleArchiveCount < filteredArchiveEpisodes.length && (
+          <button className="archive-load-more" type="button" onClick={() => setVisibleArchiveCount((count) => count + 9)}>
+            Load more conversations <ArrowDown size={16} aria-hidden="true" />
+          </button>
+        )}
         <ArrowLink href="#archive">Ask the full archive</ArrowLink>
       </section>
 
