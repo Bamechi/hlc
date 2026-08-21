@@ -4,6 +4,7 @@ import {
   ArrowDown,
   ArrowRight,
   Check,
+  ChevronLeft,
   ChevronRight,
   CirclePlay,
   Clock3,
@@ -19,7 +20,7 @@ import {
   X,
   Youtube,
 } from "lucide-react";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { CSSProperties, FormEvent, useEffect, useMemo, useState } from "react";
 import hlcMasterIndex from "./data/hlc-master-index.json";
 
 const ASK_KEYS_URL = "https://ask.19keys.com/";
@@ -62,6 +63,16 @@ const archiveEpisodes = hlcMasterIndex as ArchiveEpisode[];
 const canonicalArchiveEpisodes = archiveEpisodes.filter((episode) => !episode.duplicateOf);
 const archivePillars = [...new Set(canonicalArchiveEpisodes.map((episode) => episode.pillar))].sort();
 const archiveTags = [...new Set(canonicalArchiveEpisodes.flatMap((episode) => episode.tags))].sort();
+const ARCHIVE_PAGE_SIZE = 10;
+const pillarColors: Record<string, string> = {
+  Arts: "#efb83f",
+  Economics: "#36a56f",
+  Health: "#e13c35",
+  Relationships: "#dc5478",
+  Systems: "#4988d2",
+  Technology: "#36aaa8",
+  Vision: "#8e70d6",
+};
 
 const episodes: Episode[] = [
   {
@@ -263,7 +274,7 @@ export function HlcExperience() {
   const [curiosityQuery, setCuriosityQuery] = useState("");
   const [activePillar, setActivePillar] = useState("All");
   const [activeTag, setActiveTag] = useState("All");
-  const [visibleArchiveCount, setVisibleArchiveCount] = useState(9);
+  const [archivePage, setArchivePage] = useState(1);
   const [trailer, setTrailer] = useState<Episode | null>(null);
   const [archiveQuery, setArchiveQuery] = useState("");
   const [sponsorOpen, setSponsorOpen] = useState(false);
@@ -293,7 +304,12 @@ export function HlcExperience() {
     });
   }, [activePillar, activeTag, curiosityQuery]);
 
-  const visibleArchiveEpisodes = filteredArchiveEpisodes.slice(0, visibleArchiveCount);
+  const archivePageCount = Math.max(1, Math.ceil(filteredArchiveEpisodes.length / ARCHIVE_PAGE_SIZE));
+  const currentArchivePage = Math.min(archivePage, archivePageCount);
+  const visibleArchiveEpisodes = filteredArchiveEpisodes.slice(
+    (currentArchivePage - 1) * ARCHIVE_PAGE_SIZE,
+    currentArchivePage * ARCHIVE_PAGE_SIZE,
+  );
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -326,6 +342,11 @@ export function HlcExperience() {
     const query = archiveQuery.trim();
     const target = query ? `${ASK_KEYS_URL}?q=${encodeURIComponent(query)}` : ASK_KEYS_URL;
     window.open(target, "_blank", "noopener,noreferrer");
+  };
+
+  const changeArchivePage = (page: number) => {
+    setArchivePage(Math.min(Math.max(page, 1), archivePageCount));
+    document.getElementById("curiosity-results")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const openSponsorForm = (selection: string) => {
@@ -469,7 +490,7 @@ export function HlcExperience() {
 
       <section className="archive-section" id="curiosity">
         <div className="archive-top reveal">
-          <div><span className="kicker">107 conversations / 7 pillars / 58 topics</span><h2>Follow your curiosity.</h2></div>
+          <div><span className="kicker">107 conversations / 7 pillars / 58 topics</span><h2>Follow your <em>curiosity.</em></h2></div>
           <p>Search a guest, idea, or episode. Then move through the archive by pillar or topic.</p>
         </div>
 
@@ -482,14 +503,14 @@ export function HlcExperience() {
                 id="curiosity-search"
                 type="search"
                 value={curiosityQuery}
-                onChange={(event) => { setCuriosityQuery(event.target.value); setVisibleArchiveCount(9); }}
+                onChange={(event) => { setCuriosityQuery(event.target.value); setArchivePage(1); }}
                 placeholder="Search guest, title, topic..."
               />
             </div>
           </label>
           <label className="topic-select" htmlFor="curiosity-topic">
             <span>Filter by topic</span>
-            <select id="curiosity-topic" value={activeTag} onChange={(event) => { setActiveTag(event.target.value); setVisibleArchiveCount(9); }}>
+            <select id="curiosity-topic" value={activeTag} onChange={(event) => { setActiveTag(event.target.value); setArchivePage(1); }}>
               <option value="All">All topics</option>
               {archiveTags.map((tag) => <option value={tag} key={tag}>{tag}</option>)}
             </select>
@@ -503,7 +524,7 @@ export function HlcExperience() {
               <button
                 className={activePillar === pillar ? "is-active" : ""}
                 key={pillar}
-                onClick={() => { setActivePillar(pillar); setVisibleArchiveCount(9); }}
+                onClick={() => { setActivePillar(pillar); setArchivePage(1); }}
                 role="tab"
                 type="button"
                 aria-selected={activePillar === pillar}
@@ -514,41 +535,62 @@ export function HlcExperience() {
           </div>
         </div>
 
-        <div className="archive-result-bar reveal" aria-live="polite">
-          <span>{filteredArchiveEpisodes.length} {filteredArchiveEpisodes.length === 1 ? "conversation" : "conversations"}</span>
-          <span>{activePillar === "All" ? "All pillars" : activePillar}{activeTag === "All" ? "" : ` / ${activeTag}`}</span>
+        <div className="archive-result-bar reveal" id="curiosity-results" aria-live="polite">
+          <span>Showing {visibleArchiveEpisodes.length} of {filteredArchiveEpisodes.length} {filteredArchiveEpisodes.length === 1 ? "conversation" : "conversations"}</span>
+          <span>Page {currentArchivePage} / {archivePageCount}</span>
         </div>
 
         {visibleArchiveEpisodes.length > 0 ? (
           <div className="episode-grid curiosity-grid">
             {visibleArchiveEpisodes.map((episode, index) => (
-              <a className="episode-card reveal" href={episode.url} target="_blank" rel="noreferrer" key={episode.videoId} aria-label={`Watch ${episode.title} on YouTube`}>
-              <div className="curiosity-card-head">
-                <span className="curiosity-index">{String(index + 1).padStart(3, "0")}</span>
-                <span className="curiosity-runtime"><Clock3 size={13} aria-hidden="true" /> {episode.runtime}</span>
-              </div>
-              <span className="kicker">{episode.pillar} / {episode.show}</span>
-              <h3>{episode.title}</h3>
-              <p>{episode.guest.startsWith("Guest not named") ? "Guest details in episode" : `With ${episode.guest}`}</p>
-              <div className="episode-tags" aria-label="Episode topics">
-                {episode.tags.map((tag) => <span key={tag}>{tag}</span>)}
-              </div>
-              <div className="card-footer"><span>{episode.offer}</span><strong>Watch episode <ArrowRight size={15} /></strong></div>
-            </a>
+              <a
+                className="episode-card curiosity-card"
+                href={episode.url}
+                target="_blank"
+                rel="noreferrer"
+                key={episode.videoId}
+                aria-label={`Watch ${episode.title} on YouTube`}
+                style={{ "--pillar-accent": pillarColors[episode.pillar] ?? "#e13c35" } as CSSProperties}
+              >
+                <div className="curiosity-card-media">
+                  <img src={`https://i.ytimg.com/vi/${episode.videoId}/hqdefault.jpg`} alt="" loading="lazy" />
+                  <span className="curiosity-index">{String((currentArchivePage - 1) * ARCHIVE_PAGE_SIZE + index + 1).padStart(3, "0")}</span>
+                  <span className="curiosity-show">{episode.show}</span>
+                </div>
+                <div className="curiosity-card-body">
+                  <div className="curiosity-card-head">
+                    <span>{episode.pillar}</span>
+                    <span className="curiosity-runtime"><Clock3 size={13} aria-hidden="true" /> {episode.runtime}</span>
+                  </div>
+                  <h3>{episode.title}</h3>
+                  <p>{episode.guest.startsWith("Guest not named") ? "Guest details in episode" : `With ${episode.guest}`}</p>
+                  <div className="episode-tags" aria-label="Episode topics">
+                    {episode.tags.slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}
+                    {episode.tags.length > 3 && <span>+{episode.tags.length - 3} more</span>}
+                  </div>
+                  <div className="card-footer"><span>{episode.offer}</span><strong>Watch <CirclePlay size={16} /></strong></div>
+                </div>
+              </a>
             ))}
           </div>
         ) : (
-          <div className="archive-empty reveal">
+          <div className="archive-empty">
             <h3>No conversations found.</h3>
             <p>Try another guest, title, pillar, or topic.</p>
-            <button type="button" onClick={() => { setCuriosityQuery(""); setActivePillar("All"); setActiveTag("All"); }}>Clear filters</button>
+            <button type="button" onClick={() => { setCuriosityQuery(""); setActivePillar("All"); setActiveTag("All"); setArchivePage(1); }}>Clear filters</button>
           </div>
         )}
 
-        {visibleArchiveCount < filteredArchiveEpisodes.length && (
-          <button className="archive-load-more" type="button" onClick={() => setVisibleArchiveCount((count) => count + 9)}>
-            Load more conversations <ArrowDown size={16} aria-hidden="true" />
-          </button>
+        {filteredArchiveEpisodes.length > ARCHIVE_PAGE_SIZE && (
+          <nav className="archive-pagination" aria-label="Episode result pages">
+            <button type="button" onClick={() => changeArchivePage(currentArchivePage - 1)} disabled={currentArchivePage === 1}>
+              <ChevronLeft size={17} aria-hidden="true" /> Previous
+            </button>
+            <span><b>{currentArchivePage}</b> of {archivePageCount}</span>
+            <button type="button" onClick={() => changeArchivePage(currentArchivePage + 1)} disabled={currentArchivePage === archivePageCount}>
+              Next <ChevronRight size={17} aria-hidden="true" />
+            </button>
+          </nav>
         )}
         <ArrowLink href="#archive">Ask the full archive</ArrowLink>
       </section>

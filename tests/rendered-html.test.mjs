@@ -25,7 +25,7 @@ test("server-renders the High-Lvl Conversations experience", async () => {
   assert.match(html, /<title>High-Lvl Conversations with 19Keys<\/title>/i);
   assert.match(html, /Season 5 \/ The future is in session/);
   assert.match(html, /Ask the Archive/);
-  assert.match(html, /Follow your curiosity/);
+  assert.match(html, /Follow your[\s\S]*curiosity/);
   assert.match(html, /Pre-order for \$88/);
   assert.match(html, /Watch season trailer/);
   assert.match(html, /youtube\.com\/playlist\?list=PLXa8HXFcKT94-5I_FVD23rEzohplSf2-x/);
