@@ -22,6 +22,7 @@ import {
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 const ASK_KEYS_URL = "https://ask.19keys.com/";
+const NINETEEN_KEYS_URL = "https://19keys.com/";
 const ZIION_URL = "https://ziion.io/nations/high-lvl-nation";
 const STRIPE_PREORDER_URL = "https://buy.stripe.com/28E5kEaeJ6lk1Vb73U1Fe0k";
 const CARD_GAME_SCRIPT_URL =
@@ -523,6 +524,7 @@ export function HlcExperience() {
           <button onClick={() => openSponsorForm(partnershipOptions[0])}>Sponsor</button>
         </nav>
         <div className="header-actions">
+          <a className="profile-link" href={NINETEEN_KEYS_URL} target="_blank" rel="noreferrer">Visit 19Keys.com</a>
           <a className="drop-link" href={ZIION_URL} target="_blank" rel="noreferrer">Join Ziion</a>
           <button className="icon-button menu-toggle" onClick={() => setMenuOpen(true)} aria-label="Open menu">
             <Menu size={22} aria-hidden="true" />
@@ -536,6 +538,7 @@ export function HlcExperience() {
         {[["Watch", "#watch"], ["Ask the Archive", "#archive"], ["Shop", "#shop"], ["High Lvl University", "#circle"], ["About", "#about"]].map(([label, href], index) => (
           <a href={href} key={href} onClick={() => setMenuOpen(false)}><span>0{index + 1}</span>{label}</a>
         ))}
+        <div className="mobile-external"><a href={NINETEEN_KEYS_URL} target="_blank" rel="noreferrer">Visit 19Keys.com <ArrowRight size={16} /></a></div>
         <button className="mobile-sponsor" onClick={() => { setMenuOpen(false); openSponsorForm(partnershipOptions[0]); }}>Sponsor the show <ArrowRight /></button>
       </div>
 
@@ -720,7 +723,7 @@ export function HlcExperience() {
 
       <footer>
         <div className="footer-brand"><img src="/assets/hlc-wordmark.png" alt="High-Lvl Conversations" /><p>Ideas for the people building, funding, and owning what comes next.</p></div>
-        <div className="footer-links"><div><span>Explore</span><a href="#watch">Watch</a><a href="#archive">Ask the Archive</a><a href={ASK_KEYS_URL} target="_blank" rel="noreferrer">ASK KEYS</a><a href="#shop">Shop</a><a href="#circle">High Lvl University</a></div><div><span>Connect</span><a href={listenLinks.youtube} target="_blank">YouTube</a><a href={listenLinks.spotify} target="_blank">Spotify</a><a href={listenLinks.apple} target="_blank">Apple Podcasts</a><a href={listenLinks.iheart} target="_blank">iHeart</a><button onClick={() => openSponsorForm("Sponsor and Product Placement")}>Sponsor</button><button onClick={() => openSponsorForm("Apply to Be a Guest")}>Be a guest</button></div></div>
+        <div className="footer-links"><div><span>Explore</span><a href="#watch">Watch</a><a href="#archive">Ask the Archive</a><a href={ASK_KEYS_URL} target="_blank" rel="noreferrer">ASK KEYS</a><a href="#shop">Shop</a><a href="#circle">High Lvl University</a></div><div><span>Connect</span><a href={NINETEEN_KEYS_URL} target="_blank" rel="noreferrer">Visit 19Keys.com</a><a href={listenLinks.youtube} target="_blank">YouTube</a><a href={listenLinks.spotify} target="_blank">Spotify</a><a href={listenLinks.apple} target="_blank">Apple Podcasts</a><a href={listenLinks.iheart} target="_blank">iHeart</a><button onClick={() => openSponsorForm("Sponsor and Product Placement")}>Sponsor</button><button onClick={() => openSponsorForm("Apply to Be a Guest")}>Be a guest</button></div></div>
         <div className="footer-bottom"><span>HIGH-LVL CONVERSATIONS WITH 19KEYS</span><div><Youtube size={17} /><Instagram size={17} /><MessageSquareText size={17} /></div><span>SEASON 5 / 2026</span></div>
       </footer>
 

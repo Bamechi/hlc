@@ -35,6 +35,7 @@ test("server-renders the High-Lvl Conversations experience", async () => {
   assert.match(html, /Apply to be on the show/i);
   assert.match(html, /ziion\.io\/nations\/high-lvl-nation/);
   assert.match(html, /ask\.19keys\.com/);
+  assert.ok((html.match(/href="https:\/\/19keys\.com\/"/g) ?? []).length >= 3);
   assert.match(html, /open\.spotify\.com\/show\/2Xuv0FRgrJsN4Dl2QE0a9Y/);
   assert.match(html, /podcasts\.apple\.com\/us\/podcast\/19-keys-presents-high-level-conversations\/id1331519433/);
   assert.match(html, /iheart\.com\/podcast\/256-19-keys-presents-high-leve-43053795/);
