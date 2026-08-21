@@ -26,6 +26,10 @@ test("server-renders the High-Lvl Conversations experience", async () => {
   assert.match(html, /Season 5 \/ The future is in session/);
   assert.match(html, /Ask the Archive/);
   assert.match(html, /Follow your[\s\S]*curiosity/);
+  assert.equal((html.match(/class="episode-card curiosity-card"/g) ?? []).length, 4);
+  assert.match(html, /href="\/api\/watch\?videoId=/);
+  assert.ok(html.indexOf('<section class="commerce-band" id="shop">') < html.indexOf('<section class="archive-section" id="curiosity">'));
+  assert.ok(html.indexOf('<section class="archive-section" id="curiosity">') < html.indexOf('<section class="circle-section" id="circle">'));
   assert.match(html, /Pre-order for \$88/);
   assert.match(html, /Watch season trailer/);
   assert.match(html, /youtube\.com\/playlist\?list=PLXa8HXFcKT94-5I_FVD23rEzohplSf2-x/);
@@ -43,6 +47,22 @@ test("server-renders the High-Lvl Conversations experience", async () => {
   assert.match(html, /og:image/);
   assert.match(html, /\/og\.png/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/i);
+});
+
+test("routes invalid episode links to the HLC playlist and Keys artwork", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("fallback-test", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } };
+  const context = { waitUntil() {}, passThroughOnException() {} };
+
+  const watchResponse = await worker.fetch(new Request("http://localhost/api/watch?videoId=missing"), env, context);
+  assert.equal(watchResponse.status, 302);
+  assert.equal(watchResponse.headers.get("location"), "https://www.youtube.com/playlist?list=PLXa8HXFcKT94-5I_FVD23rEzohplSf2-x");
+
+  const thumbnailResponse = await worker.fetch(new Request("http://localhost/api/thumbnail?videoId=missing"), env, context);
+  assert.equal(thumbnailResponse.status, 302);
+  assert.equal(thumbnailResponse.headers.get("location"), "http://localhost/assets/portrait-mind.webp");
 });
 
 test("removes starter-only code and keeps production metadata", async () => {

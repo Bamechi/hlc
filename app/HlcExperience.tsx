@@ -63,7 +63,7 @@ const archiveEpisodes = hlcMasterIndex as ArchiveEpisode[];
 const canonicalArchiveEpisodes = archiveEpisodes.filter((episode) => !episode.duplicateOf);
 const archivePillars = [...new Set(canonicalArchiveEpisodes.map((episode) => episode.pillar))].sort();
 const archiveTags = [...new Set(canonicalArchiveEpisodes.flatMap((episode) => episode.tags))].sort();
-const ARCHIVE_PAGE_SIZE = 10;
+const ARCHIVE_PAGE_SIZE = 4;
 const pillarColors: Record<string, string> = {
   Arts: "#efb83f",
   Economics: "#36a56f",
@@ -488,6 +488,53 @@ export function HlcExperience() {
         </article>
       </section>
 
+      <section className="ask-section" id="archive">
+        <div className="ask-art reveal" aria-hidden="true">
+          <img src="/assets/portrait-mind.webp" alt="" />
+          <span className="ask-ring ring-one" />
+          <span className="ask-ring ring-two" />
+          <span className="ask-label">SOURCE<br />GROUNDED</span>
+        </div>
+        <div className="ask-copy reveal">
+          <span className="kicker red"><Sparkles size={14} /> HLC Intelligence / Beta</span>
+          <h2>Ask the<br /><em>Archive.</em></h2>
+          <p>Ask any question. Your prompt opens directly in ASK KEYS so the answer can live in the source-grounded archive.</p>
+          <form className="archive-form" onSubmit={submitArchive}>
+            <label htmlFor="archive-query">What do you want to understand?</label>
+            <div><Search size={19} /><input id="archive-query" value={archiveQuery} onChange={(event) => setArchiveQuery(event.target.value)} placeholder="How do I move from AI-curious to AI-owning?" /><button aria-label="Open ASK KEYS"><ArrowRight /></button></div>
+          </form>
+          <div className="sample-questions"><span>Try asking</span><button onClick={() => setArchiveQuery("What does ownership look like in the age of AI?")}>AI + ownership</button><button onClick={() => setArchiveQuery("How do you turn culture into infrastructure?")}>Culture + infrastructure</button></div>
+        </div>
+      </section>
+
+      <section className="guest-ledger">
+        <div className="guest-intro reveal"><span className="kicker">The guest ledger</span><h2>People shaping<br />the world after next.</h2><p>Builders. Artists. Thinkers. Founders. Every conversation is an invitation to see farther.</p><button className="guest-apply" onClick={() => openSponsorForm("Apply to Be a Guest")}>Apply to be on the show <ArrowRight size={15} /></button></div>
+        <div className="guest-collage reveal">
+          <img className="guest-a" src="/assets/guests-culture.webp" alt="19Keys with guests from High-Lvl Conversations" />
+          <img className="guest-b" src="/assets/guests-builders.webp" alt="High-Lvl Conversations guest portraits" />
+        </div>
+      </section>
+
+      <section className="commerce-band" id="shop">
+        <div className="product-stage reveal">
+          <div className="product-scene">
+            <span className="product-orbit product-orbit-a" aria-hidden="true" />
+            <span className="product-orbit product-orbit-b" aria-hidden="true" />
+            <img
+              src="/assets/hlc-card-product-hero.webp"
+              alt="High-Lvl Conversations Keyism Edition box, open tray, and conversation cards"
+            />
+            <span className="product-edition">The Keyism Edition / 99 Cards</span>
+          </div>
+        </div>
+        <div className="commerce-copy reveal">
+          <span className="kicker">HLC Card Game / The Keyism Edition</span>
+          <h2>Questions that<br />change the room.</h2>
+          <p>Soft-touch matte cards, black-core edges and red foil packaging built from the visual direction of the official deck.</p>
+          <div className="commerce-actions"><button className="light-action" onClick={() => setPreorderOpen(true)}><ShoppingBag size={18} /> Pre-order for $88</button><button className="inline-action" onClick={() => openSponsorForm("Live Experiences")}>Corporate orders <ArrowRight size={15} /></button></div>
+        </div>
+      </section>
+
       <section className="archive-section" id="curiosity">
         <div className="archive-top reveal">
           <div><span className="kicker">107 conversations / 7 pillars / 58 topics</span><h2>Follow your <em>curiosity.</em></h2></div>
@@ -545,7 +592,7 @@ export function HlcExperience() {
             {visibleArchiveEpisodes.map((episode, index) => (
               <a
                 className="episode-card curiosity-card"
-                href={episode.url}
+                href={`/api/watch?videoId=${encodeURIComponent(episode.videoId)}`}
                 target="_blank"
                 rel="noreferrer"
                 key={episode.videoId}
@@ -553,7 +600,16 @@ export function HlcExperience() {
                 style={{ "--pillar-accent": pillarColors[episode.pillar] ?? "#e13c35" } as CSSProperties}
               >
                 <div className="curiosity-card-media">
-                  <img src={`https://i.ytimg.com/vi/${episode.videoId}/hqdefault.jpg`} alt="" loading="lazy" />
+                  <img
+                    src={`/api/thumbnail?videoId=${encodeURIComponent(episode.videoId)}`}
+                    alt=""
+                    loading="lazy"
+                    onError={(event) => {
+                      event.currentTarget.onerror = null;
+                      event.currentTarget.src = "/assets/portrait-mind.webp";
+                      event.currentTarget.classList.add("is-placeholder");
+                    }}
+                  />
                   <span className="curiosity-index">{String((currentArchivePage - 1) * ARCHIVE_PAGE_SIZE + index + 1).padStart(3, "0")}</span>
                   <span className="curiosity-show">{episode.show}</span>
                 </div>
@@ -593,53 +649,6 @@ export function HlcExperience() {
           </nav>
         )}
         <ArrowLink href="#archive">Ask the full archive</ArrowLink>
-      </section>
-
-      <section className="ask-section" id="archive">
-        <div className="ask-art reveal" aria-hidden="true">
-          <img src="/assets/portrait-mind.webp" alt="" />
-          <span className="ask-ring ring-one" />
-          <span className="ask-ring ring-two" />
-          <span className="ask-label">SOURCE<br />GROUNDED</span>
-        </div>
-        <div className="ask-copy reveal">
-          <span className="kicker red"><Sparkles size={14} /> HLC Intelligence / Beta</span>
-          <h2>Ask the<br /><em>Archive.</em></h2>
-          <p>Ask any question. Your prompt opens directly in ASK KEYS so the answer can live in the source-grounded archive.</p>
-          <form className="archive-form" onSubmit={submitArchive}>
-            <label htmlFor="archive-query">What do you want to understand?</label>
-            <div><Search size={19} /><input id="archive-query" value={archiveQuery} onChange={(event) => setArchiveQuery(event.target.value)} placeholder="How do I move from AI-curious to AI-owning?" /><button aria-label="Open ASK KEYS"><ArrowRight /></button></div>
-          </form>
-          <div className="sample-questions"><span>Try asking</span><button onClick={() => setArchiveQuery("What does ownership look like in the age of AI?")}>AI + ownership</button><button onClick={() => setArchiveQuery("How do you turn culture into infrastructure?")}>Culture + infrastructure</button></div>
-        </div>
-      </section>
-
-      <section className="guest-ledger">
-        <div className="guest-intro reveal"><span className="kicker">The guest ledger</span><h2>People shaping<br />the world after next.</h2><p>Builders. Artists. Thinkers. Founders. Every conversation is an invitation to see farther.</p><button className="guest-apply" onClick={() => openSponsorForm("Apply to Be a Guest")}>Apply to be on the show <ArrowRight size={15} /></button></div>
-        <div className="guest-collage reveal">
-          <img className="guest-a" src="/assets/guests-culture.webp" alt="19Keys with guests from High-Lvl Conversations" />
-          <img className="guest-b" src="/assets/guests-builders.webp" alt="High-Lvl Conversations guest portraits" />
-        </div>
-      </section>
-
-      <section className="commerce-band" id="shop">
-        <div className="product-stage reveal">
-          <div className="product-scene">
-            <span className="product-orbit product-orbit-a" aria-hidden="true" />
-            <span className="product-orbit product-orbit-b" aria-hidden="true" />
-            <img
-              src="/assets/hlc-card-product-hero.webp"
-              alt="High-Lvl Conversations Keyism Edition box, open tray, and conversation cards"
-            />
-            <span className="product-edition">The Keyism Edition / 99 Cards</span>
-          </div>
-        </div>
-        <div className="commerce-copy reveal">
-          <span className="kicker">HLC Card Game / The Keyism Edition</span>
-          <h2>Questions that<br />change the room.</h2>
-          <p>Soft-touch matte cards, black-core edges and red foil packaging built from the visual direction of the official deck.</p>
-          <div className="commerce-actions"><button className="light-action" onClick={() => setPreorderOpen(true)}><ShoppingBag size={18} /> Pre-order for $88</button><button className="inline-action" onClick={() => openSponsorForm("Live Experiences")}>Corporate orders <ArrowRight size={15} /></button></div>
-        </div>
       </section>
 
       <section className="circle-section" id="circle">
