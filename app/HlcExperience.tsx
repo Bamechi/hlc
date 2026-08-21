@@ -24,6 +24,8 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 const ASK_KEYS_URL = "https://ask.19keys.com/";
 const ZIION_URL = "https://ziion.io/nations/high-lvl-nation";
 const STRIPE_PREORDER_URL = "https://buy.stripe.com/28E5kEaeJ6lk1Vb73U1Fe0k";
+const CARD_GAME_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbyZv005eu3kq1gva5lLYlD-eXpUwKuBNzQwKmnrJf8RmPVz6dFwkTw4ElMRqIibkThF/exec";
 const HLC_PLAYLIST_URL = "https://www.youtube.com/playlist?list=PLXa8HXFcKT94-5I_FVD23rEzohplSf2-x";
 const GOOGLE_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbxZCNbD0W66scsYNBi78IwbS1Yt7WEc8PHxQUo8CKo-6e2QVpRi6lNSqsPW_G2V0SA/exec";
@@ -245,34 +247,6 @@ const partnershipOptions = [
   "Apply to Be a Guest",
 ];
 
-const cardGameShots = [
-  {
-    label: "Box",
-    src: "/assets/hlc-card-box-lid.png",
-    alt: "High-Lvl Conversations Keyism Edition card game box lid",
-  },
-  {
-    label: "Interior",
-    src: "/assets/hlc-card-interior.png",
-    alt: "High-Lvl Conversations card game interior tray with three decks",
-  },
-  {
-    label: "Question",
-    src: "/assets/hlc-card-question.png",
-    alt: "High-Lvl Conversations black question card",
-  },
-  {
-    label: "Game Flow",
-    src: "/assets/hlc-card-gameflow.png",
-    alt: "High-Lvl Conversations game flow card",
-  },
-  {
-    label: "Red Deck",
-    src: "/assets/hlc-card-red-back.png",
-    alt: "High-Lvl Conversations red deck back",
-  },
-];
-
 const listenLinks = {
   youtube: "https://www.youtube.com/@19Keys/videos",
   spotify: "https://open.spotify.com/show/2Xuv0FRgrJsN4Dl2QE0a9Y",
@@ -289,6 +263,15 @@ function encodeForm(payload: Record<string, string>) {
 
 async function submitLead(payload: Record<string, string>) {
   await fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body: encodeForm(payload),
+  });
+}
+
+async function submitCardPreorder(payload: Record<string, string>) {
+  await fetch(CARD_GAME_SCRIPT_URL, {
     method: "POST",
     mode: "no-cors",
     headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
@@ -411,7 +394,6 @@ export function HlcExperience() {
   const [sponsorSelection, setSponsorSelection] = useState(partnershipOptions[0]);
   const [preorderOpen, setPreorderOpen] = useState(false);
   const [preorderStatus, setPreorderStatus] = useState("");
-  const [activeCardShot, setActiveCardShot] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const activeCuriosityEpisodes = useMemo(
@@ -510,15 +492,9 @@ export function HlcExperience() {
     const form = event.currentTarget;
     const data = new FormData(form);
     setPreorderStatus("Saving...");
-    await submitLead({
-      selection: "HLC Card Game Pre-Order",
+    await submitCardPreorder({
       name: String(data.get("name") ?? ""),
-      phone: "",
       email: String(data.get("email") ?? ""),
-      business: "",
-      link: STRIPE_PREORDER_URL,
-      notes: "High-Lvl Conversations Card Game $88 pre-order lead",
-      source: "HLC Card Game",
     });
     setPreorderStatus("Opening checkout...");
     window.location.href = STRIPE_PREORDER_URL;
@@ -683,27 +659,15 @@ export function HlcExperience() {
 
       <section className="commerce-band" id="shop">
         <div className="product-stage reveal">
-          <div className="product-gallery" aria-label="High-Lvl Conversations card game previews">
-            <div className="product-frame">
-              <img src={cardGameShots[activeCardShot].src} alt={cardGameShots[activeCardShot].alt} />
-            </div>
-            <div className="product-thumbs" role="tablist" aria-label="Card game preview choices">
-              {cardGameShots.map((shot, index) => (
-                <button
-                  aria-selected={activeCardShot === index}
-                  className={activeCardShot === index ? "is-active" : ""}
-                  key={shot.src}
-                  onClick={() => setActiveCardShot(index)}
-                  role="tab"
-                  type="button"
-                >
-                  <img src={shot.src} alt="" />
-                  <span>{shot.label}</span>
-                </button>
-              ))}
-            </div>
+          <div className="product-scene">
+            <span className="product-orbit product-orbit-a" aria-hidden="true" />
+            <span className="product-orbit product-orbit-b" aria-hidden="true" />
+            <img
+              src="/assets/hlc-card-product-hero.webp"
+              alt="High-Lvl Conversations Keyism Edition box, open tray, and conversation cards"
+            />
+            <span className="product-edition">The Keyism Edition / 99 Cards</span>
           </div>
-          <div className="deck-box deck-front"><span>HIGH-LVL</span><img src="/assets/19keys-key.png" alt="" /><b>CONVERSATION CARDS</b><small>THE KEYISM EDITION</small></div>
         </div>
         <div className="commerce-copy reveal">
           <span className="kicker">HLC Card Game / The Keyism Edition</span>
